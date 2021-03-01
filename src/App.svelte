@@ -7,7 +7,5 @@
 </style>
 
 <div>
-  <header>
-    
-  </header>
+  <h1>Hello</h1>
 </div>
