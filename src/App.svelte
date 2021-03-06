@@ -10,21 +10,6 @@
     [2, 4, 6],
   ]
 
-  const GameData = {
-    board: [
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-      [[], [], [], [], [], [], [], [], []],
-    ],
-    current: 'x',
-  }
-
   const generate = () => {
     return new Array(9).fill(null)
   }
@@ -34,18 +19,23 @@
   })
 
   let result = null
+  let turn = 'x'
 
   const setValue = (i, j) => {
-    GameData.board[i][j] = GameData.current
-    GameData.board = [...GameData.board]
-    GameData.current = GameData.current == 'x' ? 'o' : 'x'
-    console.log(GameData[i])
+    metaboard[i][j] = turn
+    metaboard = [...metaboard]
+    turn = turn == 'x' ? 'o' : 'x'
+
     // if (!squares.includes(null)) {
     //   result = 'Draw'
     // } else {
     //   checkWin()
     // }
   }
+
+  console.log(metaboard[0])
+  setValue(0, 0)
+  console.log(metaboard[0])
 
   // const checkWin = () => {
   //   for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
@@ -66,7 +56,7 @@
   const checkWin = () => {
     return WINNING_COMBINATIONS.some((combination) => {
       return combination.every((index) => {
-        if (squares[index] == GameData.current) console.log('winner')
+        if (squares[index] == turn) console.log('winner')
       })
     })
   }
@@ -74,7 +64,7 @@
   const restart = () => {
     squares = new Array(9).fill(null)
     result = null
-    GameData.current = 'x'
+    turn = 'x'
   }
 </script>
 
@@ -88,7 +78,7 @@
               <div
                 class="square"
                 on:click={() => {
-                  if (GameData.board[i][j] == null) {
+                  if (metaboard[i][j] == null) {
                     setValue(i, j)
                   }
                 }}
@@ -100,7 +90,7 @@
         </div>
       {/each}
     </div>
-    <p id="current">Current Player: {GameData.current}</p>
+    <p id="current">Current Player: {turn.toUpperCase()}</p>
   {:else}
     <div>
       {result}
