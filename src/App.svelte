@@ -1,69 +1,159 @@
 <script>
-  import {onMount} from 'svelte';
-  let count = 0;
-  onMount(() => {
-    const interval = setInterval(() => count++, 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  });
+  const WINNING_COMBINATIONS = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ]
+
+  const GameData = {
+    board: [
+      [['o'], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
+    ],
+    current: 'x',
+  }
+
+  const generate = () => {
+    return new Array(9).fill('a')
+  }
+
+  let metaboard = new Array(9).fill(null)
+
+  metaboard.forEach((index) => {
+    metaboard[index] = generate()
+  })
+
+  console.log(metaboard[0])
+
+  let squares = new Array(9).fill(null)
+
+  let result = null
+
+  const setValue = (i) => {
+    squares[i] = GameData.current
+    squares = [...squares]
+    GameData.current = GameData.current == 'x' ? 'o' : 'x'
+    if (!squares.includes(null)) {
+      result = 'Draw'
+    } else {
+      checkWin()
+    }
+  }
+
+  // const checkWin = () => {
+  //   for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
+  //     if (buttons[WINNING_COMBINATIONS[i][0]] != null) {
+  //       if (
+  //         buttons[WINNING_COMBINATIONS[i][0]] ==
+  //           buttons[WINNING_COMBINATIONS[i][1]] &&
+  //         buttons[WINNING_COMBINATIONS[i][1]] ==
+  //           buttons[WINNING_COMBINATIONS[i][2]]
+  //       ) {
+  //         result = 'Winner: ' + buttons[WINNING_COMBINATIONS[i][0]]
+  //         break
+  //       }
+  //     }
+  //   }
+  // }
+
+  const checkWin = () => {
+    return WINNING_COMBINATIONS.some((combination) => {
+      return combination.every((index) => {
+        if (squares[index] == GameData.current) console.log('winner')
+      })
+    })
+  }
+
+  const restart = () => {
+    squares = new Array(9).fill(null)
+    result = null
+    GameData.current = 'x'
+  }
 </script>
 
-<style>
-  :global(body) {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-  }
-  .App {
-    text-align: center;
-  }
-  .App code {
-    background: #0002;
-    padding: 4px 8px;
-    border-radius: 4px;
-  }
-  .App p {
-    margin: 0.4rem;
+{#if !result}
+  <div class="board">
+    {#each squares as square, i}
+      <div
+        class="square"
+        on:click={() => {
+          if (squares[i] == null) {
+            setValue(i)
+          }
+        }}
+      >
+        {square ? square : ''}
+      </div>
+    {/each}
+  </div>
+  <p>Current Player: {GameData.current}</p>
+{:else}
+  <div>
+    {result}
+    <div on:click={restart}> Restart </div>
+  </div>
+{/if}
+
+<style lang="scss">
+  $cell-size: 100px;
+  $mark-size: calc($cell-size * 0.9);
+
+  .board {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(3, auto);
   }
 
-  .App-header {
-    background-color: #f9f6f6;
-    color: #333;
-    min-height: 100vh;
+  .square {
+    width: $cell-size;
+    height: $cell-size;
+    border: 1px solid black;
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
-    font-size: calc(10px + 2vmin);
-  }
-  .App-link {
-    color: #ff3e00;
-  }
-  .App-logo {
-    height: 36vmin;
-    pointer-events: none;
-    margin-bottom: 3rem;
-    animation: App-logo-pulse infinite 1.6s ease-in-out alternate;
-  }
-  @keyframes App-logo-pulse {
-    from {
-      transform: scale(1);
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+
+    &:first-child,
+    &:nth-child(2),
+    &:nth-child(3) {
+      border-top: none;
     }
-    to {
-      transform: scale(1.06);
+
+    &:nth-child(3n + 1) {
+      border-left: none;
     }
+
+    &:nth-child(3n + 3) {
+      border-right: none;
+    }
+
+    &:last-child,
+    &:nth-child(8),
+    &:nth-child(7) {
+      border-bottom: none;
+    }
+  }
+
+  .o,
+  .x {
+    cursor: default;
   }
 </style>
-
-<div class="App">
-  <header class="App-header">
-    <img src="/logo.svg" class="App-logo" alt="logo" />
-    <p>Edit <code>src/App.svelte</code> and save to reload.</p>
-    <p>Page has been open for <code>{count}</code> seconds.</p>
-    <p>
-      <a class="App-link" href="https://svelte.dev" target="_blank" rel="noopener noreferrer">
-        Learn Svelte
-      </a>
-    </p>
-  </header>
-</div>
