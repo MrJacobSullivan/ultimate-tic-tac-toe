@@ -12,7 +12,7 @@
 
   const GameData = {
     board: [
-      [['o'], [], [], [], [], [], [], [], []],
+      [[], [], [], [], [], [], [], [], []],
       [[], [], [], [], [], [], [], [], []],
       [[], [], [], [], [], [], [], [], []],
       [[], [], [], [], [], [], [], [], []],
@@ -26,30 +26,25 @@
   }
 
   const generate = () => {
-    return new Array(9).fill('a')
+    return new Array(9).fill(null)
   }
 
-  let metaboard = new Array(9).fill(null)
-
-  metaboard.forEach((index) => {
-    metaboard[index] = generate()
+  let metaboard = new Array(9).fill(null).map(() => {
+    return generate()
   })
-
-  console.log(metaboard[0])
-
-  let squares = new Array(9).fill(null)
 
   let result = null
 
-  const setValue = (i) => {
-    squares[i] = GameData.current
-    squares = [...squares]
+  const setValue = (i, j) => {
+    GameData.board[i][j] = GameData.current
+    GameData.board = [...GameData.board]
     GameData.current = GameData.current == 'x' ? 'o' : 'x'
-    if (!squares.includes(null)) {
-      result = 'Draw'
-    } else {
-      checkWin()
-    }
+    console.log(GameData[i])
+    // if (!squares.includes(null)) {
+    //   result = 'Draw'
+    // } else {
+    //   checkWin()
+    // }
   }
 
   // const checkWin = () => {
@@ -83,7 +78,38 @@
   }
 </script>
 
-{#if !result}
+<div class="game">
+  {#if !result}
+    <div class="metaboard">
+      {#each metaboard as board, i}
+        <div class="metasquare">
+          <div class="board">
+            {#each board as square, j}
+              <div
+                class="square"
+                on:click={() => {
+                  if (GameData.board[i][j] == null) {
+                    setValue(i, j)
+                  }
+                }}
+              >
+                {square ? square : ''}
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/each}
+    </div>
+    <p id="current">Current Player: {GameData.current}</p>
+  {:else}
+    <div>
+      {result}
+      <div on:click={restart}> Restart </div>
+    </div>
+  {/if}
+</div>
+
+<!-- {#if !result}
   <div class="board">
     {#each squares as square, i}
       <div
@@ -104,14 +130,19 @@
     {result}
     <div on:click={restart}> Restart </div>
   </div>
-{/if}
-
+{/if} -->
 <style lang="scss">
-  $cell-size: 100px;
+  $cell-size: 4.5rem;
   $mark-size: calc($cell-size * 0.9);
 
-  .board {
-    width: 100vw;
+  .game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .metaboard {
+    width: 100vh;
     height: 100vh;
     display: grid;
     justify-content: center;
@@ -119,6 +150,41 @@
     justify-items: center;
     align-items: center;
     grid-template-columns: repeat(3, auto);
+  }
+  .board {
+    width: $cell-size * 3;
+    height: $cell-size * 3;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    justify-items: center;
+    align-items: center;
+    grid-template-columns: repeat(3, auto);
+    margin: 0.75rem;
+  }
+
+  .metasquare {
+    border: 1px solid black;
+
+    &:first-child,
+    &:nth-child(2),
+    &:nth-child(3) {
+      border-top: none;
+    }
+
+    &:nth-child(3n + 1) {
+      border-left: none;
+    }
+
+    &:nth-child(3n + 3) {
+      border-right: none;
+    }
+
+    &:last-child,
+    &:nth-child(8),
+    &:nth-child(7) {
+      border-bottom: none;
+    }
   }
 
   .square {
@@ -150,10 +216,20 @@
     &:nth-child(7) {
       border-bottom: none;
     }
+
+    &:hover {
+      background-color: red;
+    }
   }
 
   .o,
   .x {
     cursor: default;
+  }
+
+  #current {
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
   }
 </style>
