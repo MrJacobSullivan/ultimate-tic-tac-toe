@@ -125,10 +125,24 @@
   $cell-size: 4.5rem;
   $mark-size: calc($cell-size * 0.9);
 
+  $blue-50: #eff6ff;
+  $blue-100: #dbeafe;
+  $blue-200: #bfdbfe;
+  $blue-300: #93c5fd;
+  $blue-400: #60a5fa;
+  $blue-500: #3b82f6;
+  $blue-600: #2563eb;
+  $blue-700: #1d4ed8;
+  $blue-800: #1e40af;
+  $blue-900: #1e3a8a;
+
   .game {
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: $blue-100;
+    color: $blue-700;
+    font-size: 3rem;
   }
 
   .metaboard {
@@ -154,7 +168,7 @@
   }
 
   .metasquare {
-    border: 1px solid black;
+    border: 1px solid $blue-500;
 
     &:first-child,
     &:nth-child(2),
@@ -180,7 +194,7 @@
   .square {
     width: $cell-size;
     height: $cell-size;
-    border: 1px solid black;
+    border: 1px solid $blue-400;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -208,7 +222,7 @@
     }
 
     &:hover {
-      background-color: red;
+      background-color: $blue-300;
     }
   }
 
@@ -221,5 +235,7 @@
     position: absolute;
     bottom: 2rem;
     left: 2rem;
+    color: $blue-600;
+    font-size: 1rem;
   }
 </style>
