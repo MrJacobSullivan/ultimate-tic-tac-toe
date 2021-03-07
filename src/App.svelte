@@ -1,4 +1,7 @@
 <script>
+  import Circle from './Circle.svelte'
+  import Cross from './Cross.svelte'
+
   const WINNING_COMBINATIONS = [
     [0, 1, 2],
     [3, 4, 5],
@@ -10,20 +13,18 @@
     [2, 4, 6],
   ]
 
-  const generate = () => {
-    return new Array(9).fill(null)
-  }
+  const generate = (initial) => new Array(9).fill(initial)
 
-  let metaboard = new Array(9).fill(null).map(() => {
-    return generate()
-  })
+  let globalboard = new Array(9).fill(null).map(() => generate(null))
+
+  let recent = generate(true)
 
   let result = null
   let turn = 'x'
 
   const setValue = (i, j) => {
-    metaboard[i][j] = turn
-    metaboard = [...metaboard]
+    globalboard[i][j] = turn
+    globalboard = [...globalboard]
     turn = turn == 'x' ? 'o' : 'x'
 
     // if (!squares.includes(null)) {
@@ -32,10 +33,6 @@
     //   checkWin()
     // }
   }
-
-  console.log(metaboard[0])
-  setValue(0, 0)
-  console.log(metaboard[0])
 
   // const checkWin = () => {
   //   for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
@@ -53,6 +50,14 @@
   //   }
   // }
 
+  const handleClick = (i, j) => {
+    if (globalboard[i][j] == null && recent[i]) {
+      recent = generate(false)
+      recent[j] = true
+      setValue(i, j)
+    }
+  }
+
   const checkWin = () => {
     return WINNING_COMBINATIONS.some((combination) => {
       return combination.every((index) => {
@@ -62,7 +67,8 @@
   }
 
   const restart = () => {
-    squares = new Array(9).fill(null)
+    globalboard = new Array(9).fill(null).map(() => generate())
+    recent = new Array(9).fill(false)
     result = null
     turn = 'x'
   }
@@ -70,20 +76,17 @@
 
 <div class="game">
   {#if !result}
-    <div class="metaboard">
-      {#each metaboard as board, i}
-        <div class="metasquare">
+    <div class="globalboard">
+      {#each globalboard as globalcell, i}
+        <div class="globalsquare {recent[i] ? 'recent' : ''}">
           <div class="board">
-            {#each board as square, j}
-              <div
-                class="square"
-                on:click={() => {
-                  if (metaboard[i][j] == null) {
-                    setValue(i, j)
-                  }
-                }}
-              >
-                {square ? square : ''}
+            {#each globalcell as square, j}
+              <div class="square" on:click={() => handleClick(i, j)}>
+                {#if square == 'x'}
+                  <Cross />
+                {:else if square == 'o'}
+                  <Circle />
+                {/if}
               </div>
             {/each}
           </div>
@@ -122,7 +125,7 @@
   </div>
 {/if} -->
 <style lang="scss">
-  $cell-size: 4.5rem;
+  $cell-size: 5rem;
   $mark-size: calc($cell-size * 0.9);
 
   $blue-50: #eff6ff;
@@ -136,6 +139,15 @@
   $blue-800: #1e40af;
   $blue-900: #1e3a8a;
 
+  .container {
+    position: relative;
+  }
+
+  :global(.circle),
+  :global(.cross) {
+    stroke: $blue-800;
+  }
+
   .game {
     display: flex;
     align-items: center;
@@ -145,7 +157,7 @@
     font-size: 3rem;
   }
 
-  .metaboard {
+  .globalboard {
     width: 100vh;
     height: 100vh;
     display: grid;
@@ -155,6 +167,7 @@
     align-items: center;
     grid-template-columns: repeat(3, auto);
   }
+
   .board {
     width: $cell-size * 3;
     height: $cell-size * 3;
@@ -167,9 +180,7 @@
     margin: 0.75rem;
   }
 
-  .metasquare {
-    border: 1px solid $blue-500;
-
+  %grid {
     &:first-child,
     &:nth-child(2),
     &:nth-child(3) {
@@ -191,39 +202,48 @@
     }
   }
 
+  .globalsquare {
+    @extend %grid;
+    border: 3px solid $blue-500;
+
+    &.recent {
+      // color: green;
+
+      :global(.circle) {
+        // stroke: green;
+      }
+
+      .square {
+        cursor: pointer;
+      }
+
+      .square:hover {
+        background-color: $blue-400;
+      }
+
+      background-color: $blue-300;
+    }
+  }
+
   .square {
+    @extend %grid;
+
     width: $cell-size;
     height: $cell-size;
-    border: 1px solid $blue-400;
+    border: 2px solid $blue-400;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
-    cursor: pointer;
+    cursor: default;
 
-    &:first-child,
-    &:nth-child(2),
-    &:nth-child(3) {
-      border-top: none;
+    p {
+      vertical-align: middle;
     }
 
-    &:nth-child(3n + 1) {
-      border-left: none;
-    }
-
-    &:nth-child(3n + 3) {
-      border-right: none;
-    }
-
-    &:last-child,
-    &:nth-child(8),
-    &:nth-child(7) {
-      border-bottom: none;
-    }
-
-    &:hover {
-      background-color: $blue-300;
-    }
+    // &:hover {
+    //   background-color: $blue-300;
+    // }
   }
 
   .o,
@@ -232,6 +252,7 @@
   }
 
   #current {
+    font-family: sans-serif;
     position: absolute;
     bottom: 2rem;
     left: 2rem;

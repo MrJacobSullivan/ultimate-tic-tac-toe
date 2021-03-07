@@ -1,0 +1,15 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  width="5rem"
+  height="5rem"
+  version="1.1"
+>
+  <circle
+    cx="50%"
+    cy="50%"
+    r="35%"
+    stroke-width="15%"
+    fill="transparent"
+    class="circle"
+  />
+</svg>

@@ -1,3 +1,5 @@
+# Ultimate Tic Tac Toe
+
 # New Project
 
 > ✨ Bootstrapped with Create Snowpack App (CSA).
