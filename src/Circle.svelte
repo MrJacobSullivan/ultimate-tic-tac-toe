@@ -1,7 +1,14 @@
+<script>
+  export let large = false
+
+  let size = 5
+  if (large) size = 15
+</script>
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  width="5rem"
-  height="5rem"
+  width="{size}rem"
+  height="{size}rem"
   version="1.1"
 >
   <circle

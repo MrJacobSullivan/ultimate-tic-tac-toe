@@ -19,56 +19,52 @@
 
   let recent = generate(true)
 
+  let globalGame = generate(false)
+
   let result = null
   let turn = 'x'
+
+  const check = (board, i) => {
+    if (!board.includes(null)) {
+      console.log('draw')
+      // result = 'Draw'
+    } else if (
+      WINNING_COMBINATIONS.some((combination) => {
+        return combination.every((index) => {
+          return board[index] == turn
+        })
+      })
+    ) {
+      globalGame[i] = turn
+    }
+  }
 
   const setValue = (i, j) => {
     globalboard[i][j] = turn
     globalboard = [...globalboard]
+
+    check(globalboard[i], i)
+
     turn = turn == 'x' ? 'o' : 'x'
-
-    // if (!squares.includes(null)) {
-    //   result = 'Draw'
-    // } else {
-    //   checkWin()
-    // }
   }
-
-  // const checkWin = () => {
-  //   for (let i = 0; i < WINNING_COMBINATIONS.length; i++) {
-  //     if (buttons[WINNING_COMBINATIONS[i][0]] != null) {
-  //       if (
-  //         buttons[WINNING_COMBINATIONS[i][0]] ==
-  //           buttons[WINNING_COMBINATIONS[i][1]] &&
-  //         buttons[WINNING_COMBINATIONS[i][1]] ==
-  //           buttons[WINNING_COMBINATIONS[i][2]]
-  //       ) {
-  //         result = 'Winner: ' + buttons[WINNING_COMBINATIONS[i][0]]
-  //         break
-  //       }
-  //     }
-  //   }
-  // }
 
   const handleClick = (i, j) => {
     if (globalboard[i][j] == null && recent[i]) {
-      recent = generate(false)
-      recent[j] = true
       setValue(i, j)
-    }
-  }
 
-  const checkWin = () => {
-    return WINNING_COMBINATIONS.some((combination) => {
-      return combination.every((index) => {
-        if (squares[index] == turn) console.log('winner')
-      })
-    })
+      recent = generate(false)
+
+      if (globalGame != false) {
+        recent[j] = true
+      } else {
+        recent = generate(true)
+      }
+    }
   }
 
   const restart = () => {
     globalboard = new Array(9).fill(null).map(() => generate())
-    recent = new Array(9).fill(false)
+    recent = generate(true)
     result = null
     turn = 'x'
   }
@@ -80,15 +76,21 @@
       {#each globalboard as globalcell, i}
         <div class="globalsquare {recent[i] ? 'recent' : ''}">
           <div class="board">
-            {#each globalcell as square, j}
-              <div class="square" on:click={() => handleClick(i, j)}>
-                {#if square == 'x'}
-                  <Cross />
-                {:else if square == 'o'}
-                  <Circle />
-                {/if}
-              </div>
-            {/each}
+            {#if !globalGame[i]}
+              {#each globalcell as square, j}
+                <div class="square" on:click={() => handleClick(i, j)}>
+                  {#if square == 'x'}
+                    <Cross />
+                  {:else if square == 'o'}
+                    <Circle />
+                  {/if}
+                </div>
+              {/each}
+            {:else if globalGame[i] == 'x'}
+              <Cross large />
+            {:else if globalGame[i] == 'o'}
+              <Circle large />
+            {/if}
           </div>
         </div>
       {/each}
@@ -102,28 +104,6 @@
   {/if}
 </div>
 
-<!-- {#if !result}
-  <div class="board">
-    {#each squares as square, i}
-      <div
-        class="square"
-        on:click={() => {
-          if (squares[i] == null) {
-            setValue(i)
-          }
-        }}
-      >
-        {square ? square : ''}
-      </div>
-    {/each}
-  </div>
-  <p>Current Player: {GameData.current}</p>
-{:else}
-  <div>
-    {result}
-    <div on:click={restart}> Restart </div>
-  </div>
-{/if} -->
 <style lang="scss">
   $cell-size: 5rem;
   $mark-size: calc($cell-size * 0.9);
