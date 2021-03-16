@@ -1,8 +1,6 @@
 <script>
   export let large = false
-
-  let size = 5
-  if (large) size = 15
+  let size = large ? 15 : 5
 </script>
 
 <svg
@@ -17,6 +15,6 @@
     r="35%"
     stroke-width="15%"
     fill="transparent"
-    class="circle"
+    class="mark"
   />
 </svg>
